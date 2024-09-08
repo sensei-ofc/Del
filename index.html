@@ -3,23 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Visor de PDFs en Nueva Pestaña</title>
+  <title>Revista de PDFs</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- Formulario para subir PDF -->
-  <h1>Subir nuevo PDF</h1>
+  <h1>Visor de PDFs en Revista</h1>
+
+  <!-- Lista de PDFs subidos -->
+  <h2>Lista de PDFs Subidos</h2>
+  <div id="pdfList"></div>
+
+  <!-- Botón para cargar una nueva revista -->
+  <h2>Subir nuevo PDF</h2>
   <form id="uploadForm">
     <input type="file" id="pdfFile" accept="application/pdf">
     <button type="submit">Subir PDF</button>
   </form>
 
-  <h2>Lista de PDFs Subidos</h2>
-  <div id="pdfList">
-    <!-- Aquí se mostrarán los PDFs subidos -->
-  </div>
-
   <script src="app.js"></script>
+
 </body>
 </html>
