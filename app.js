@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
   const uploadForm = document.getElementById('uploadForm');
   const pdfFileInput = document.getElementById('pdfFile');
   const pdfListContainer = document.getElementById('pdfList');
-  const magazineView = document.getElementById('magazineView');
-  const pdfViewer = document.getElementById('pdfViewer');
   
   let pdfList = []; // Lista de PDFs subidos
 
@@ -46,9 +44,9 @@ document.addEventListener('DOMContentLoaded', function () {
       pdfName.textContent = pdf.name;
 
       const viewButton = document.createElement('button');
-      viewButton.textContent = 'Ver como revista';
+      viewButton.textContent = 'Ver PDF';
       viewButton.addEventListener('click', function () {
-        viewMagazine(pdf.url);
+        openPdfInNewTab(pdf.url);
       });
 
       const toggleButton = document.createElement('button');
@@ -68,15 +66,30 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Ver el PDF como revista en un iframe
-  function viewMagazine(pdfUrl) {
-    magazineView.style.display = 'block';
-    pdfViewer.src = pdfUrl;
+  // Abrir PDF en una nueva pestaña
+  function openPdfInNewTab(pdfUrl) {
+    const newTab = window.open();
+    newTab.document.write(`
+      <html>
+      <head>
+        <title>Visor de PDF</title>
+        <style>
+          body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+          }
+          iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+          }
+        </style>
+      </head>
+      <body>
+        <iframe src="${pdfUrl}" frameborder="0"></iframe>
+      </body>
+      </html>
+    `);
   }
-
-  // Cerrar el visor de la revista
-  document.getElementById('closeMagazine').addEventListener('click', function () {
-    magazineView.style.display = 'none';
-    pdfViewer.src = '';
-  });
-});
+}); 
