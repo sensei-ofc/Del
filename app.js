@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Mostrar PDF como revista usando Turn.js
-  function openPdfAsMagazine(pdfUrl) {
+  // Mostrar PDF como revista usando Turn.js y pdf.js
+  async function openPdfAsMagazine(pdfUrl) {
     const newTab = window.open();
     newTab.document.write(`
       <html>
@@ -97,24 +97,55 @@ document.addEventListener('DOMContentLoaded', function () {
             width: 100%;
             height: 100%;
           }
-          iframe {
+          img {
             width: 100%;
             height: 100%;
-            border: none;
           }
         </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/turn.js/4/turn.min.js"></script>
       </head>
       <body>
-        <div id="flipbook">
-          <div class="page"><iframe src="${pdfUrl}#page=1"></iframe></div>
-          <div class="page"><iframe src="${pdfUrl}#page=2"></iframe></div>
-          <!-- Aquí puedes agregar más páginas -->
-        </div>
+        <div id="flipbook"></div>
 
         <script>
-          document.addEventListener('DOMContentLoaded', function() {
+          document.addEventListener('DOMContentLoaded', async function() {
+            const pdfUrl = "${pdfUrl}";
             const flipbook = document.getElementById('flipbook');
+
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+
+            const totalPages = pdf.numPages;
+
+            // Crear cada página como imagen
+            for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+              const page = await pdf.getPage(pageNum);
+              const scale = 1.5;
+              const viewport = page.getViewport({ scale });
+
+              const canvas = document.createElement('canvas');
+              const context = canvas.getContext('2d');
+              canvas.height = viewport.height;
+              canvas.width = viewport.width;
+
+              const renderContext = {
+                canvasContext: context,
+                viewport: viewport
+              };
+
+              await page.render(renderContext).promise;
+
+              const img = document.createElement('img');
+              img.src = canvas.toDataURL();
+
+              const pageDiv = document.createElement('div');
+              pageDiv.classList.add('page');
+              pageDiv.appendChild(img);
+              flipbook.appendChild(pageDiv);
+            }
+
+            // Iniciar Turn.js
             $(flipbook).turn({
               width: 800,
               height: 600,
@@ -129,4 +160,4 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Inicializa la lista de PDFs al cargar la página
   displayPdfList();
-});
+}); 
